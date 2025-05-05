@@ -1,0 +1,28 @@
+.nav-link.custom-link {
+    color: #0d6efd; /* primary */
+    position: relative;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link.custom-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    height: 2px;
+    background-color: #dc3545;
+    border-bottom: 2px dotted #dc3545;
+    transition: width 0.4s ease;
+  }
+  
+  .nav-link.custom-link:hover,
+  .nav-link.custom-link:active {
+    color: #dc3545 !important;
+  }
+  
+  .nav-link.custom-link:hover::after,
+  .nav-link.custom-link:active::after {
+    width: 100%;
+  }
+  
