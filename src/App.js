@@ -14,7 +14,7 @@ import "aos/dist/aos.css";
 function App() {
   useEffect(() => {
     if (window.location.hostname.endsWith("vercel.app")) {
-      window.location.href = "https://rankstore.in";
+      window.location.href = "https://www.rankpublishinghouse.store";
     }
   }, []);
   useEffect(() => {
