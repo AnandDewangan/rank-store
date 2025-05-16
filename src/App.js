@@ -13,6 +13,11 @@ import "aos/dist/aos.css";
 
 function App() {
   useEffect(() => {
+    if (window.location.hostname.endsWith("vercel.app")) {
+      window.location.href = "https://rankstore.in";
+    }
+  }, []);
+  useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
 
