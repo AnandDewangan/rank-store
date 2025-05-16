@@ -4,9 +4,8 @@ import BestSellingBook from "./BestSellingBook";
 import FeaturedBooks from "./FeaturedBooks";
 import PopularBooks from "./PopularBooks";
 import Quotation from "./Quotation";
-import SpecialOffer from "./SpecialOffer";
+// import SpecialOffer from "./SpecialOffer";
 import LatestBlog from "./LatestBlog";
-import DownloadApp from './DownloadApp';
 
 const Home = () => {
   return (
@@ -16,8 +15,7 @@ const Home = () => {
     <FeaturedBooks />
     <BestSellingBook />
     <PopularBooks /> 
-    <DownloadApp />
-    <SpecialOffer />
+    {/* <SpecialOffer /> */}
     <LatestBlog />
     </>
   );

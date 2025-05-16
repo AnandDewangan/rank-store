@@ -31,16 +31,16 @@ const FooterBottom = () => {
           {/* Right - Social Links */}
           <div className="col-md-4 text-end mt-3 mt-md-0">
             <div className="d-flex gap-3 text-secondary justify-content-end align-items-center">
-              <a href="#" className="text-danger">
+              <a href="https://www.instagram.com/rankpublishing_house"  target="_blank" className="text-danger">
                 <FaInstagram /> 
               </a>
-              <a href="#" className="text-primary">
+              <a href="https://www.facebook.com/share/1Bu6mqhMwx"  target="_blank" className="text-primary">
                 <FaFacebook />
               </a>
-              <a href="#" className="text-danger">
+              <a href="https://www.youtube.com/@Rankpublishinghouse"  target="_blank" className="text-danger">
                 <FaYoutube />
               </a>
-              <a href="#" className="text-primary">
+              <a href="https://www.linkedin.com/in/rank-publishing-house-9a9735354"  target="_blank" className="text-primary">
                 <FaLinkedin />
               </a>
             </div>

@@ -1,28 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
-
-const blogPosts = [
-  {
-    date: "Mar 30, 2021",
-    title: "Reading books always makes the moments happy",
-    image: "images/post-img1.jpg",
-    category: "Inspiration",
-  },
-  {
-    date: "Mar 29, 2021",
-    title: "Reading books always makes the moments happy",
-    image: "images/post-img2.jpg",
-    category: "Inspiration",
-  },
-  {
-    date: "Feb 27, 2021",
-    title: "Reading books always makes the moments happy",
-    image: "images/post-img3.jpg",
-    category: "Inspiration",
-  },
-];
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,23 +22,32 @@ const itemVariants = {
 };
 
 const LatestBlog = () => {
+  const [articles, setArticles] = useState([]);
+
+  const fetchArticles = async () => {
+    try {
+      const res = await axios.get(`${baseURL}/api/articles`);
+      setArticles(res.data);
+    } catch (err) {
+      console.error("Error fetching articles", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
   return (
     <>
       <Helmet>
-        <title>Latest Articles | Book Blog & Inspiration | Rank Publishing House</title>
+        <title>
+          Latest Articles | Book Blog & Inspiration | Rank Publishing House
+        </title>
         <meta
           name="description"
-          content="Read the latest inspirational articles and blog posts from Rank Publishing House. Explore topics about reading habits, book reviews, and more."
-        />
-        <meta
-          name="keywords"
-          content="book blog, inspirational articles, book reading tips, publishing house blog, Rank Publishing, read books blog, author blog India"
+          content="Explore latest inspirational articles and book stories from Rank Publishing House."
         />
         <meta property="og:title" content="Rank Publishing House Blog" />
-        <meta
-          property="og:description"
-          content="Explore thoughtful blog posts about the joy of reading, author experiences, and inspirational book journeys."
-        />
         <meta property="og:image" content="/images/post-img1.jpg" />
         <meta property="og:type" content="article" />
         <meta property="og:url" content="https://www.rankstore.in/blog" />
@@ -90,8 +80,8 @@ const LatestBlog = () => {
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
-            {blogPosts.map((post, index) => (
-              <Col md={4} key={index}>
+            {articles.map((article, index) => (
+              <Col md={4} key={article._id}>
                 <motion.article
                   className="column p-2"
                   variants={itemVariants}
@@ -100,7 +90,6 @@ const LatestBlog = () => {
                     boxShadow: "0 15px 30px rgba(0, 0, 0, 0.4)",
                     transition: { duration: 0.3 },
                   }}
-                  transition={{ duration: 0.3 }}
                 >
                   <figure className="mb-3 position-relative">
                     <a
@@ -108,42 +97,21 @@ const LatestBlog = () => {
                       className="d-block position-relative overflow-hidden rounded-3"
                     >
                       <img
-                        src={post.image}
-                        alt={post.title}
+                        src={article.image}
+                        alt={article.topic}
                         className="post-image img-fluid w-100"
                       />
                       <div className="categories position-absolute bottom-0 start-0 bg-white text-primary text-end py-1 px-3 m-3 rounded-3">
-                        {post.category}
+                        {article.topic}
                       </div>
                     </a>
                   </figure>
 
                   <div className="post-item">
-                    <div className="meta-date text-danger mb-2">{post.date}</div>
-                    <h3>
-                      <a
-                        href="#"
-                        className="text-light fw-semibold text-decoration-none"
-                      >
-                        {post.title}
-                      </a>
-                    </h3>
-
-                    <div className="links-element mt-2">
-                      <div className="social-links">
-                        <ul className="d-flex list-unstyled mt-2">
-                          <li className="me-3">
-                            <a href="#"><i className="icon icon-facebook" style={{ fontSize: "18px" }}></i></a>
-                          </li>
-                          <li className="me-3">
-                            <a href="#"><i className="icon icon-twitter" style={{ fontSize: "18px" }}></i></a>
-                          </li>
-                          <li className="me-3">
-                            <a href="#"><i className="icon icon-behance-square" style={{ fontSize: "18px" }}></i></a>
-                          </li>
-                        </ul>
-                      </div>
+                    <div className="meta-date text-danger mb-2">
+                      {new Date(article.date).toLocaleDateString()}
                     </div>
+                    <p className="text-light">{article.description}</p>
                   </div>
                 </motion.article>
               </Col>

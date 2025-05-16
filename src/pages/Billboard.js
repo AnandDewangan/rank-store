@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
-import { Carousel, Button } from 'react-bootstrap';
-import { FaArrowRight, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet';
+import React, { useState, useEffect } from "react";
+import { Carousel } from "react-bootstrap";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
+import axios from "axios";
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const Billboard = () => {
   const [index, setIndex] = useState(0);
-
-  const slides = [
-    {
-      title: "Life of the Wild",
-      description:
-        "Buy or publish books at Rank Store - India's fast and affordable publishing platform.",
-      image: "images/main-banner1.jpg",
-    },
-    {
-      title: "Birds gonna be Happy",
-      description:
-        "Sell your own book or explore top titles at Rank Publishing House, Bilaspur, Chhattisgarh.",
-      image: "images/main-banner2.jpg",
-    },
-  ];
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
   };
+
+  useEffect(() => {
+    axios
+      .get(`${baseURL}/api/images`)
+      .then((res) => {
+        setSlides(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading slides:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p className="text-center my-5">Loading slides...</p>;
 
   return (
     <>
@@ -39,8 +43,14 @@ const Billboard = () => {
           content="rank store, rank publishing, rank publishing house, book store, publish book, self publish, bilaspur, chhattisgarh, affordable, fast, cheap, recommended"
         />
         <meta name="author" content="Rank Publishing House" />
-        <meta property="og:title" content="Rank Publishing House | Fast Book Publishing" />
-        <meta property="og:description" content="Publish or sell your books at Rank Publishing House – trusted and affordable service in Bilaspur, Chhattisgarh." />
+        <meta
+          property="og:title"
+          content="Rank Publishing House | Fast Book Publishing"
+        />
+        <meta
+          property="og:description"
+          content="Publish or sell your books at Rank Publishing House – trusted and affordable service in Bilaspur, Chhattisgarh."
+        />
         <meta property="og:image" content="/images/main-banner1.jpg" />
         <meta property="og:url" content="https://www.rankstore.in" />
         <meta property="og:type" content="website" />
@@ -73,7 +83,7 @@ const Billboard = () => {
             }
           >
             {slides.map((slide, i) => (
-              <Carousel.Item key={i}>
+              <Carousel.Item key={slide._id || i}>
                 <motion.div
                   className="row no-gutters align-items-center"
                   initial={{ opacity: 0, x: -30 }}
@@ -83,12 +93,12 @@ const Billboard = () => {
                 >
                   <div className="col-lg-5 p-5 text-center text-lg-end">
                     <motion.h2
-                      className="display-5 fw-bold mb-3 text-primary"
+                      className="display-5 fw-bold mb-3 text-danger"
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.3 }}
                     >
-                      {slide.title}
+                      {slide.title || "Untitled"}
                     </motion.h2>
                     <motion.p
                       className="lead mb-4"
@@ -96,24 +106,33 @@ const Billboard = () => {
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.4 }}
                     >
-                      {slide.description}
+                      {slide.description || "No description available."}
                     </motion.p>
+                    <motion.h6
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <figcaption className="blockquote-footer text-primary mt-2">
+                        {slide.name || "NA"}
+                      </figcaption>
+                    </motion.h6>
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.5 }}
                     >
-                      <Button variant="danger">
+                      {/* <Button variant="danger">
                         Buy Now <FaArrowRight className="ms-2" />
-                      </Button>
+                      </Button> */}
                     </motion.div>
                   </div>
 
                   <div className="col-lg-7 p-5">
                     <motion.img
-                      src={slide.image}
-                      alt={slide.title}
-                      className="d-block mx-auto img-fluid"
+                      src={slide.url}
+                      alt={slide.title || "Banner Image"}
+                      className="d-block mx-auto img-fluid w-50 shadow-lg rounded-3"
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.2 }}

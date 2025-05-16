@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import AllBooks from './pages/AllBooks';
+import BookDetail from "./pages/BookDetail";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import FooterBottom from "./components/FooterBottom";
@@ -19,6 +21,8 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/books" element={<AllBooks />} />
+        <Route path="/books/:id" element={<BookDetail />} />
       </Routes>
       <Footer />
       <FooterBottom />

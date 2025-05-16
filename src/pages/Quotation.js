@@ -1,62 +1,93 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
+import axios from "axios";
+import { Container, Carousel } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
-const Quotation = () => {
+const WeeklyTestimonial = () => {
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await axios.get(`${baseURL}/api/feedbacks`);
+        if (res.data.length > 0) {
+          setTestimonials(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch testimonials", err);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
   return (
     <>
       <Helmet>
-        <title>Quote of the Week | Rank Publishing</title>
+        <title>Author Testimonial | Rank Publishing</title>
         <meta
           name="description"
-          content="Weekly inspiration for readers: 'The more you read, the more places you'll go.' — Dr. Seuss"
+          content="Real feedback from satisfied authors about their publishing journey with Rank Publishing."
         />
         <meta
           name="keywords"
-          content="quote of the week, reading quote, Dr. Seuss, inspirational book quotes, motivation for readers"
+          content="author testimonials, publishing experience, feedback, writers, Rank Publishing"
         />
-        <meta property="og:title" content="Quote of the Week - Rank Publishing" />
+        <meta
+          property="og:title"
+          content="Author Testimonial - Rank Publishing"
+        />
         <meta
           property="og:description"
-          content="Discover inspiring reading quotes weekly. This week: Dr. Seuss reminds us how far reading can take us."
+          content="See what authors are saying about their publishing experience with Rank Publishing."
         />
       </Helmet>
 
-      <section
-        id="quotation"
-        className="bg-dark text-white quotation-section py-5"
-      >
-        <div className="container">
+      <section className="bg-dark text-white py-5">
+        <Container>
           <motion.h2
-            className="section-title text-center text-danger"
+            className="text-center text-danger"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
-            Quote of the Week
+            Testimonials from our Authors
           </motion.h2>
 
-          <motion.figure
-            className="text-center mt-4"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <blockquote className="blockquote">
-              <p className="quote-text fs-4 fst-italic">
-                “The more that you read, the more things you will know. The more
-                that you learn, the more places you’ll go.”
-              </p>
-            </blockquote>
-            <figcaption className="blockquote-footer text-primary mt-2">
-              Dr. Seuss <cite title="Source Title">— American Author</cite>
-            </figcaption>
-          </motion.figure>
-        </div>
+          {testimonials.length > 0 && (
+            <Carousel
+              fade
+              controls={false}
+              indicators={false}
+              interval={4000}
+              className="mt-4"
+            >
+              {testimonials.map((testimonial, index) => (
+                <Carousel.Item key={index}>
+                  <motion.figure
+                    className="text-center"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1 }}
+                  >
+                    <blockquote className="blockquote">
+                      <p className="fs-4 fst-italic">“{testimonial.message}”</p>
+                    </blockquote>
+                    <figcaption className="blockquote-footer text-warning mt-2">
+                      {testimonial.author}
+                    </figcaption>
+                  </motion.figure>
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          )}
+        </Container>
       </section>
     </>
   );
 };
 
-export default Quotation;
+export default WeeklyTestimonial;

@@ -1,119 +1,34 @@
-// BookshelfSection.jsx
-import React, { useState } from "react";
-import Slider from "react-slick";
+// PopularBooks.jsx
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "react-bootstrap";
-import { FaArrowRight } from "react-icons/fa";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { Button, Col, Row, Spinner } from "react-bootstrap";
 import { Helmet } from "react-helmet";
-
-const genres = [
-  "All Genre",
-  "Business",
-  "Technology",
-  "Romantic",
-  "Adventure",
-  "Fictional",
-];
-
-const books = [
-  {
-    id: 1,
-    title: "Portrait photography",
-    author: "Adam Silber",
-    genre: "Technology",
-    image: "images/tab-item1.jpg",
-    price: 40,
-  },
-  {
-    id: 2,
-    title: "Once upon a time",
-    author: "Klien Marry",
-    genre: "Fictional",
-    image: "images/tab-item2.jpg",
-    price: 35,
-  },
-  {
-    id: 3,
-    title: "Tips of simple lifestyle",
-    author: "Bratt Smith",
-    genre: "Business",
-    image: "images/tab-item3.jpg",
-    price: 40,
-  },
-  {
-    id: 4,
-    title: "Just felt from outside",
-    author: "Nicole Wilson",
-    genre: "Romantic",
-    image: "images/tab-item4.jpg",
-    price: 40,
-  },
-  {
-    id: 5,
-    title: "Peaceful Enlightment",
-    author: "Marmik Lama",
-    genre: "Business",
-    image: "images/tab-item5.jpg",
-    price: 40,
-  },
-  {
-    id: 6,
-    title: "Great travel at desert",
-    author: "Sanchit Howdy",
-    genre: "Adventure",
-    image: "images/tab-item6.jpg",
-    price: 40,
-  },
-  {
-    id: 7,
-    title: "Life among the pirates",
-    author: "Armor Ramsey",
-    genre: "Adventure",
-    image: "images/tab-item7.jpg",
-    price: 40,
-  },
-  {
-    id: 8,
-    title: "Simple way of piece life",
-    author: "Armor Ramsey",
-    genre: "Romantic",
-    image: "images/tab-item8.jpg",
-    price: 40,
-  },
-];
+import axios from "axios";
+import { Link } from "react-router-dom"; 
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../App.css";
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const PopularBooks = () => {
-  const [selectedGenre, setSelectedGenre] = useState("All Genre");
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredBooks =
-    selectedGenre === "All Genre"
-      ? books
-      : books.filter((book) => book.genre === selectedGenre);
+  useEffect(() => {
+    const fetchBestSeller = async () => {
+      try {
+        const res = await axios.get(`${baseURL}/api/orders/best-selling`);
+        if (res.data.length > 0) {
+          setBooks(res.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch best selling book:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const settings = {
-    dots: false,
-    infinite: true,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    speed: 2000,
-    autoplaySpeed: 4000,
-    cssEase: "linear",
-    arrows: true,
-    responsive: [
-      {
-        breakpoint: 992,
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 576,
-        settings: { slidesToShow: 1 },
-      },
-    ],
-  };
+    fetchBestSeller();
+  }, []);
 
   return (
     <>
@@ -139,79 +54,100 @@ const PopularBooks = () => {
         />
         <meta property="og:type" content="product.group" />
       </Helmet>
+
       <section className="py-5 my-5 bg-light" id="popular-books">
         <div className="container">
           <div className="text-center mb-5">
-            <span className="text-danger">Some quality items</span>
+            <span className="text-danger">Bestsellers</span>
             <h2 className="fw-bold text-primary">Popular Books</h2>
           </div>
 
-          {/* Genre Tabs */}
-          <ul className="nav justify-content-center mb-4">
-            {genres.map((genre) => (
-              <li className="nav-item mx-2" key={genre}>
-                <button
-                  className={`btn bg-transparent border-0 px-2 py-1 ${
-                    selectedGenre === genre
-                      ? "border-bottom border-danger text-danger"
-                      : "text-secondary"
-                  }`}
-                  onClick={() => setSelectedGenre(genre)}
-                >
-                  {genre}
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {/* Carousel */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <Slider {...settings}>
-              {filteredBooks.map((book) => (
-                <motion.div
-                  key={book.id}
-                  className="p-3"
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <div className="card shadow-sm h-100 border-0">
-                    <div
-                      className="d-flex justify-content-center align-items-center bg-white"
-                      style={{ height: "280px", overflow: "hidden" }}
+          {loading ? (
+            <div className="text-center">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <div className="d-flex overflow-auto gap-4 px-2 pb-3 scroll-snap-x">
+                {books.map((item) => {
+                  const book = item.book; // extract the actual book object
+                  return (
+                    <motion.div
+                      key={book._id}
+                      className="card shadow-sm border-0 flex-shrink-0"
+                      style={{ width: "250px", scrollSnapAlign: "start" }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ type: "spring", stiffness: 300 }}
                     >
-                      <img
-                        src={book.image}
-                        alt={book.title}
-                        className="img-fluid"
-                        style={{
-                          maxHeight: "100%",
-                          maxWidth: "100%",
-                          objectFit: "contain",
-                        }}
-                      />
-                    </div>
-
-                    <div className="card-body text-center">
-                      <h5 className="card-title text-primary">{book.title}</h5>
-                      <p className="card-text text-muted">{book.author}</p>
-                      <p className="fw-bold">${book.price.toFixed(2)}</p>
-                      <Button
-                        variant="danger"
-                        className="d-inline-flex align-items-center"
+                      <Link
+                                      to={`/books/${book._id}`}
+                                      className="text-decoration-none w-100"
+                                    >
+                      <div
+                        className="d-flex justify-content-center align-items-center bg-white"
+                        style={{ height: "250px", overflow: "hidden" }}
                       >
-                        Buy Now <FaArrowRight className="ms-2" />
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </Slider>
-          </motion.div>
+                        <img
+                          src={book.cover_image}
+                          alt={book.title}
+                          className="img-fluid rounded"
+                          style={{
+                            maxHeight: "100%",
+                            maxWidth: "100%",
+                            objectFit: "contain",
+                          }}
+                        />
+                      </div>
+                      </Link>
+                      <div className="card-body text-center">
+                        <h5 className="card-title text-primary">
+                          {book.title}
+                        </h5>
+                        <p className="card-text text-muted">{book.author}</p>
+                        <figcaption className="item-price fs-5 fw-bold">
+                          {book.rankMrp &&
+                          book.paperMrp &&
+                          book.rankMrp !== book.paperMrp ? (
+                            <>
+                              <span className="text-muted text-decoration-line-through me-2 fs-6">
+                                ₹ {book.paperMrp}
+                              </span>
+                              <span className="text-success">
+                                ₹ {book.rankMrp}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-success">
+                              ₹ {book.rankMrp || book.paperMrp}
+                            </span>
+                          )}
+                        </figcaption>
+                        <Button
+                          variant="danger"
+                          className="d-inline-flex align-items-center"
+                        >
+                          Add to Cart
+                        </Button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              <Row className="mt-4 text-center">
+                <Col md={12}>
+                  <a href="/books" className="btn btn-outline-danger">
+                    View all products{" "}
+                    <i className="ms-2 icon icon-ns-arrow-right"></i>
+                  </a>
+                </Col>
+              </Row>
+            </motion.div>
+          )}
         </div>
       </section>
     </>

@@ -1,34 +1,11 @@
-import React from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet';
-
-const books = [
-  {
-    title: 'Simple way of piece life',
-    author: 'Armor Ramsey',
-    price: '$ 40.00',
-    image: 'images/product-item1.jpg',
-  },
-  {
-    title: 'Great travel at desert',
-    author: 'Sanchit Howdy',
-    price: '$ 38.00',
-    image: 'images/product-item2.jpg',
-  },
-  {
-    title: 'The lady beauty Scarlett',
-    author: 'Arthur Doyle',
-    price: '$ 45.00',
-    image: 'images/product-item3.jpg',
-  },
-  {
-    title: 'Once upon a time',
-    author: 'Klien Marry',
-    price: '$ 35.00',
-    image: 'images/product-item4.jpg',
-  },
-];
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
+import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
+import axios from "axios";
+import "../App.css";
+import { Link } from "react-router-dom";
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -48,10 +25,30 @@ const itemVariants = {
 };
 
 const FeaturedBooks = () => {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await axios.get(`${baseURL}/api/books/featured-books`);
+        setBooks(res.data);
+      } catch (error) {
+        console.error("Error fetching featured books:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+
   return (
     <>
       <Helmet>
-        <title>Featured Books | Affordable & Popular Reads | Rank Publishing House</title>
+        <title>
+          Featured Books | Affordable & Popular Reads | Rank Publishing House
+        </title>
         <meta
           name="description"
           content="Explore featured books handpicked by Rank Publishing House. Discover bestsellers, affordable books, and popular reads for all age groups."
@@ -67,7 +64,10 @@ const FeaturedBooks = () => {
         />
         <meta property="og:image" content="/images/product-item1.jpg" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.rankstore.in/featured-books" />
+        <meta
+          property="og:url"
+          content="https://www.rankstore.in/featured-books"
+        />
       </Helmet>
 
       <section id="featured-books" className="py-5 my-5">
@@ -83,46 +83,86 @@ const FeaturedBooks = () => {
             </Col>
           </Row>
 
-          <motion.div
-            className="product-list"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            <Row>
-              {books.map((book, index) => (
-                <Col md={3} key={index} className="mb-4">
-                  <motion.div
-                    className="product-item text-center"
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <figure className="product-style mb-3">
-                      <img
-                        src={book.image}
-                        alt={book.title}
-                        className="img-fluid"
-                      />
-                      <Button variant="danger" size="sm" className="mt-2">
+          {loading ? (
+            <div className="text-center my-5">
+              <Spinner animation="border" variant="primary" />
+              <p>Loading featured books...</p>
+            </div>
+          ) : (
+            <motion.div
+              className="product-list"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <Row>
+                {books.map((book, index) => (
+                  <Col md={3} key={index} className="mb-4">
+                    <motion.div
+                      className="product-item text-center"
+                      variants={itemVariants}
+                      // whileHover={{ scale: 1.05 }}
+                    >
+                      <Link
+                to={`/books/${book._id}`}
+                className="text-decoration-none w-100"
+              >
+                      <div className="flip-card shadow border rounded">
+                        <div className="flip-card-inner">
+                          <div className="flip-card-front d-flex align-items-center justify-content-center">
+                            <img
+                              src={book.cover_image}
+                              alt={book.title}
+                              className="img-fluid rounded"
+                              style={{ maxHeight: "220px", objectFit: "cover" }}
+                            />
+                          </div>
+                          <div className="flip-card-back">
+                            <h6 className="text-danger">ISBN-{book.isbn}</h6>
+                            <h5 className="text-primary">{book.title}</h5>
+                            <p className="text-secondary">{book.author}</p>
+                            <p className="text-dark">Book Size-{book.size}</p>
+                            <p className="text-success">
+                              No of Pages-{book.pages}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      </Link>
+                      <figcaption className="item-price fs-5 fw-bold mt-3">
+                        {book.rankMrp &&
+                        book.paperMrp &&
+                        book.rankMrp !== book.paperMrp ? (
+                          <>
+                            <span className="text-muted text-decoration-line-through me-2 fs-6">
+                              ₹{book.paperMrp}
+                            </span>
+                            <span className="text-success">
+                              ₹{book.rankMrp}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-success">
+                            ₹{book.rankMrp || book.paperMrp}
+                          </span>
+                        )}
+                      </figcaption>
+                      <Button variant="danger" size="md" className="my-2">
                         Add to Cart
                       </Button>
-                    </figure>
-                    <figcaption>
-                      <h5>{book.title}</h5>
-                      <span className="text-primary d-block mb-1">{book.author}</span>
-                      <div className="item-price fs-5 fw-bold">{book.price}</div>
-                    </figcaption>
-                  </motion.div>
-                </Col>
-              ))}
-            </Row>
-          </motion.div>
+                    </motion.div>
+                  </Col>
+                ))}
+              </Row>
+            </motion.div>
+          )}
 
           <Row className="mt-4 text-center">
-            <Col md={12} className="text-center">
-              <a href="#" className="btn btn-outline-danger">
-                View all products <i className="ms-2 icon icon-ns-arrow-right"></i>
+            <Col md={12}>
+              <a href="/books" className="btn btn-outline-danger">
+                View all products{" "}
+                <i className="ms-2 icon icon-ns-arrow-right"></i>
               </a>
             </Col>
           </Row>

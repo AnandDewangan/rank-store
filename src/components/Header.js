@@ -19,16 +19,16 @@ const Header = () => {
           <div className="d-flex justify-content-between py-2">
             {/* Social Links */}
             <div className="d-flex gap-3 text-secondary">
-              <a href="#" className="text-danger">
+              <a href="https://www.instagram.com/rankpublishing_house" rel="noreferrer" target="_blank" className="text-danger">
                 <FaInstagram />
               </a>
-              <a href="#" className="text-primary">
+              <a href="https://www.facebook.com/share/1Bu6mqhMwx" rel="noreferrer" target="_blank" className="text-primary">
                 <FaFacebookF />
               </a>
-              <a href="#" className="text-danger">
+              <a href="https://www.youtube.com/@Rankpublishinghouse" rel="noreferrer" target="_blank" className="text-danger">
                 <FaYoutube />
               </a>
-              <a href="#" className="text-primary">
+              <a href="https://www.linkedin.com/in/rank-publishing-house-9a9735354" rel="noreferrer" target="_blank" className="text-primary">
                 <FaLinkedin />
               </a>
             </div>
@@ -90,19 +90,14 @@ const Header = () => {
                       Popular
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item>
+                  {/* <Nav.Item>
                     <Nav.Link href="#special-offer" className="custom-link">
                       Offer
                     </Nav.Link>
-                  </Nav.Item>
+                  </Nav.Item> */}
                   <Nav.Item>
                     <Nav.Link href="#latest-blog" className="custom-link">
                       Articles
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link href="#download-app" className="custom-link">
-                      Download App
                     </Nav.Link>
                   </Nav.Item>
                 </Nav>
