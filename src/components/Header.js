@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
@@ -11,6 +12,10 @@ import {
 import { Navbar, Nav, Container } from "react-bootstrap";
 
 const Header = () => {
+  const { cartItems } = useContext(CartContext);
+const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+
   return (
     <div id="header-wrap">
       {/* Top Content (Social Links, Account, Cart, Search) */}
@@ -43,11 +48,11 @@ const Header = () => {
                 <span>Account</span>
               </a>
               <a
-                href="#"
+                href="/cart"
                 className="d-flex align-items-center gap-1 text-decoration-none text-light"
               >
                 <FaClipboard />
-                <span>Cart: (0)</span>
+                <span>Cart: ({totalItems})</span> 
               </a>
             </div>
           </div>
