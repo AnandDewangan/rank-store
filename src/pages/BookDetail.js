@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import { CartContext } from "../context/CartContext";
 import "../App.css";
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
@@ -13,7 +14,8 @@ const BookDetail = () => {
   const [reviewDescription, setReviewDescription] = useState("");
   const [reviewed, setReviewed] = useState(false);
   const [message, setMessage] = useState("");
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState([]); 
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     axios
@@ -58,9 +60,7 @@ const BookDetail = () => {
   };
 
   const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    cart.push(book);
-    localStorage.setItem("cart", JSON.stringify(cart));
+    addToCart({ ...book, quantity: 1 });
     alert("Book added to cart!");
   };
 

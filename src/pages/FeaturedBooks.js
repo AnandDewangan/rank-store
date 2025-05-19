@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
 import axios from "axios";
 import "../App.css";
 import { Link } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { CartContext } from "../context/CartContext";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const containerVariants = {
@@ -27,6 +34,7 @@ const itemVariants = {
 const FeaturedBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -42,6 +50,10 @@ const FeaturedBooks = () => {
 
     fetchBooks();
   }, []);
+
+  const handleAddToCart = (book) => {
+    addToCart({ ...book, quantity: 1 });
+  };
 
   return (
     <>
@@ -97,63 +109,88 @@ const FeaturedBooks = () => {
               viewport={{ once: true, amount: 0.2 }}
             >
               <Row>
-                {books.map((book, index) => (
-                  <Col md={3} key={index} className="mb-4">
-                    <motion.div
-                      className="product-item text-center"
-                      variants={itemVariants}
-                      // whileHover={{ scale: 1.05 }}
-                    >
-                      <Link
-                to={`/books/${book._id}`}
-                className="text-decoration-none w-100"
-              >
-                      <div className="flip-card shadow border rounded">
-                        <div className="flip-card-inner">
-                          <div className="flip-card-front d-flex align-items-center justify-content-center">
-                            <img
-                              src={book.cover_image}
-                              alt={book.title}
-                              className="img-fluid rounded"
-                              style={{ maxHeight: "220px", objectFit: "cover" }}
-                            />
+                <Swiper
+                  modules={[Navigation, Pagination, Autoplay]}
+                  spaceBetween={20}
+                  slidesPerView={1}
+                  // navigation
+                  // pagination={{ clickable: true }}
+                  autoplay={{ delay: 4000 }}
+                  breakpoints={{
+                    576: { slidesPerView: 1 },
+                    768: { slidesPerView: 2 },
+                    992: { slidesPerView: 3 },
+                    1200: { slidesPerView: 4 },
+                  }}
+                >
+                  {books.map((book, index) => (
+                    <SwiperSlide key={index}>
+                      <motion.div
+                        className="product-item text-center"
+                        variants={itemVariants}
+                      >
+                        <Link
+                          to={`/books/${book._id}`}
+                          className="text-decoration-none w-100"
+                        >
+                          <div className="flip-card shadow border rounded">
+                            <div className="flip-card-inner">
+                              <div className="flip-card-front d-flex align-items-center justify-content-center">
+                                <img
+                                  src={book.cover_image}
+                                  alt={book.title}
+                                  className="img-fluid rounded"
+                                  style={{
+                                    maxHeight: "220px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
+                              <div className="flip-card-back">
+                                <h6 className="text-danger">
+                                  ISBN-{book.isbn}
+                                </h6>
+                                <h5 className="text-primary">{book.title}</h5>
+                                <p className="text-secondary">{book.author}</p>
+                                <p className="text-dark">
+                                  Book Size-{book.size}
+                                </p>
+                                <p className="text-success">
+                                  No of Pages-{book.pages}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flip-card-back">
-                            <h6 className="text-danger">ISBN-{book.isbn}</h6>
-                            <h5 className="text-primary">{book.title}</h5>
-                            <p className="text-secondary">{book.author}</p>
-                            <p className="text-dark">Book Size-{book.size}</p>
-                            <p className="text-success">
-                              No of Pages-{book.pages}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      </Link>
-                      <figcaption className="item-price fs-5 fw-bold mt-3">
-                        {book.rankMrp &&
-                        book.paperMrp &&
-                        book.rankMrp !== book.paperMrp ? (
-                          <>
-                            <span className="text-muted text-decoration-line-through me-2 fs-6">
-                              ₹{book.paperMrp}
-                            </span>
+                        </Link>
+                        <figcaption className="item-price fs-5 fw-bold mt-3">
+                          {book.rankMrp &&
+                          book.paperMrp &&
+                          book.rankMrp !== book.paperMrp ? (
+                            <>
+                              <span className="text-muted text-decoration-line-through me-2 fs-6">
+                                ₹{book.paperMrp}
+                              </span>
+                              <span className="text-success">
+                                ₹{book.rankMrp}
+                              </span>
+                            </>
+                          ) : (
                             <span className="text-success">
-                              ₹{book.rankMrp}
+                              ₹{book.rankMrp || book.paperMrp}
                             </span>
-                          </>
-                        ) : (
-                          <span className="text-success">
-                            ₹{book.rankMrp || book.paperMrp}
-                          </span>
-                        )}
-                      </figcaption>
-                      <Button variant="danger" size="md" className="my-2">
-                        Add to Cart
-                      </Button>
-                    </motion.div>
-                  </Col>
-                ))}
+                          )}
+                        </figcaption>
+                        <Button
+                          variant="danger"
+                          className="d-inline-flex align-items-center mt-2"
+                          onClick={() => handleAddToCart(book)}
+                        >
+                          Add to Cart
+                        </Button>
+                      </motion.div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </Row>
             </motion.div>
           )}

@@ -1,17 +1,20 @@
-// PopularBooks.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { Button, Col, Row, Spinner } from "react-bootstrap";
 import { Helmet } from "react-helmet";
 import axios from "axios";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
+
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const PopularBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { addToCart } = useContext(CartContext); 
 
   useEffect(() => {
     const fetchBestSeller = async () => {
@@ -29,6 +32,10 @@ const PopularBooks = () => {
 
     fetchBestSeller();
   }, []);
+
+  const handleAddToCart = (book) => {
+    addToCart({ ...book, quantity: 1 });
+  };
 
   return (
     <>
@@ -75,7 +82,7 @@ const PopularBooks = () => {
             >
               <div className="d-flex overflow-auto gap-4 px-2 pb-3 scroll-snap-x">
                 {books.map((item) => {
-                  const book = item.book; // extract the actual book object
+                  const book = item.book;
                   return (
                     <motion.div
                       key={book._id}
@@ -85,29 +92,27 @@ const PopularBooks = () => {
                       transition={{ type: "spring", stiffness: 300 }}
                     >
                       <Link
-                                      to={`/books/${book._id}`}
-                                      className="text-decoration-none w-100"
-                                    >
-                      <div
-                        className="d-flex justify-content-center align-items-center bg-white"
-                        style={{ height: "250px", overflow: "hidden" }}
+                        to={`/books/${book._id}`}
+                        className="text-decoration-none w-100"
                       >
-                        <img
-                          src={book.cover_image}
-                          alt={book.title}
-                          className="img-fluid rounded"
-                          style={{
-                            maxHeight: "100%",
-                            maxWidth: "100%",
-                            objectFit: "contain",
-                          }}
-                        />
-                      </div>
+                        <div
+                          className="d-flex justify-content-center align-items-center bg-white"
+                          style={{ height: "250px", overflow: "hidden" }}
+                        >
+                          <img
+                            src={book.cover_image}
+                            alt={book.title}
+                            className="img-fluid rounded"
+                            style={{
+                              maxHeight: "100%",
+                              maxWidth: "100%",
+                              objectFit: "contain",
+                            }}
+                          />
+                        </div>
                       </Link>
                       <div className="card-body text-center">
-                        <h5 className="card-title text-primary">
-                          {book.title}
-                        </h5>
+                        <h5 className="card-title text-primary">{book.title}</h5>
                         <p className="card-text text-muted">{book.author}</p>
                         <figcaption className="item-price fs-5 fw-bold">
                           {book.rankMrp &&
@@ -129,7 +134,8 @@ const PopularBooks = () => {
                         </figcaption>
                         <Button
                           variant="danger"
-                          className="d-inline-flex align-items-center"
+                          className="d-inline-flex align-items-center mt-2"
+                          onClick={() => handleAddToCart(book)}
                         >
                           Add to Cart
                         </Button>
