@@ -56,10 +56,9 @@ const Footer = () => {
             <div className="col-md-2">
               <h5 className="text-primary">Help</h5>
               <ul className="list-unstyled">
-                <li><a href="#" className="text-decoration-none text-muted">Help Center</a></li>
-                <li><a href="#" className="text-decoration-none text-muted">Report a Problem</a></li>
-                <li><a href="#" className="text-decoration-none text-muted">Suggesting Edits</a></li>
-                <li><a href="#" className="text-decoration-none text-muted">Contact Us</a></li>
+                <li><a href="/term-conditions" className="text-decoration-none text-muted">Term & Conditions</a></li>
+                <li><a href="/privacy-policy" className="text-decoration-none text-muted">Privacy Policy</a></li>
+                <li><a href="/contact-us" className="text-decoration-none text-muted">Contact Us</a></li>
               </ul>
             </div>
           </div>
