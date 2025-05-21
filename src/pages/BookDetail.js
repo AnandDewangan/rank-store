@@ -4,6 +4,8 @@ import axios from "axios";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { CartContext } from "../context/CartContext";
 import "../App.css";
+import { toast } from 'react-toastify';
+
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const BookDetail = () => {
@@ -61,7 +63,7 @@ const BookDetail = () => {
 
   const handleAddToCart = () => {
     addToCart({ ...book, quantity: 1 });
-    alert("Book added to cart!");
+    toast.success("Book added to cart!");
   };
 
   const renderStars = (value) =>
