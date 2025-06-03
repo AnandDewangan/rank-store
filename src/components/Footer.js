@@ -32,25 +32,25 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/featured" className="text-decoration-none text-muted">
+                <a href="#featured-books" className="text-decoration-none text-muted">
                   Featured
                 </a>
               </li>
               <li>
                 <a
-                  href="/best-selling"
+                  href="#best-selling"
                   className="text-decoration-none text-muted"
                 >
                   Best Selling
                 </a>
               </li>
               <li>
-                <a href="/popular" className="text-decoration-none text-muted">
+                <a href="#popular-books" className="text-decoration-none text-muted">
                   Popular
                 </a>
               </li>
               <li>
-                <a href="/articles" className="text-decoration-none text-muted">
+                <a href="#latest-blog" className="text-decoration-none text-muted">
                   Articles
                 </a>
               </li>
@@ -63,7 +63,7 @@ const Footer = () => {
             <ul className="list-unstyled">
               <li>
                 <a
-                  href="/view-cart"
+                  href="/cart"
                   className="text-decoration-none text-muted"
                 >
                   View Cart
