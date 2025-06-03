@@ -3,8 +3,11 @@ import { CartContext } from "../context/CartContext";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { Plus, Minus, Trash2 } from "lucide-react";
 import "../App.css";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
+  const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity } = useContext(CartContext);
 
   const handleIncrement = (bookId) => {
@@ -67,10 +70,14 @@ const CartPage = () => {
                 <Button
                   variant="outline-danger"
                   size="sm"
-                  onClick={() => removeFromCart(item._id)}
+                  onClick={() => {
+                    removeFromCart(item._id);
+                    toast.error("Remove from Cart");
+                  }}
                   className="d-flex align-items-center gap-1"
                 >
-                  <Trash2 size={16} /> <span className="d-none d-md-inline">Remove</span>
+                  <Trash2 size={16} />{" "}
+                  <span className="d-none d-md-inline">Remove</span>
                 </Button>
               </div>
             </Col>
@@ -78,7 +85,12 @@ const CartPage = () => {
 
           <Col md={12} className="mt-4 text-center">
             <h4 className="fw-bold mb-3">Total: ₹ {totalPrice.toFixed(2)}</h4>
-            <Button variant="success" size="lg" className="px-4 py-2 rounded-pill">
+            <Button
+              variant="success"
+              size="lg"
+              className="px-4 py-2 rounded-pill"
+              onClick={() => navigate("/checkout")}
+            >
               Proceed to Checkout
             </Button>
           </Col>
