@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import AllBooks from './pages/AllBooks';
+import AllBooks from "./pages/AllBooks";
 import BookDetail from "./pages/BookDetail";
 import CartPage from "./pages/CartPage";
 import TermConditions from "./pages/TermConditions";
@@ -10,7 +10,9 @@ import ContactUs from "./pages/ContactUs";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import FooterBottom from "./components/FooterBottom";
-import { ToastContainer } from 'react-toastify';
+import CheckoutPage from "./pages/CheckoutPage";
+import ThankYouPage from "./pages/ThankYouPage";
+import { ToastContainer } from "react-toastify";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import AOS from "aos";
@@ -38,6 +40,8 @@ function App() {
         <Route path="/term-conditions" element={<TermConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/thank-you" element={<ThankYouPage />} />
       </Routes>
       <Footer />
       <FooterBottom />
