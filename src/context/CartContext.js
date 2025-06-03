@@ -17,7 +17,9 @@ export const CartProvider = ({ children }) => {
       const existing = prev.find((item) => item._id === book._id);
       if (existing) {
         return prev.map((item) =>
-          item._id === book._id ? { ...item, quantity: item.quantity + 1 } : item
+          item._id === book._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       } else {
         return [...prev, { ...book, quantity: 1 }];
@@ -31,14 +33,24 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = (bookId, quantity) => {
     setCartItems((prev) =>
-      prev.map((item) =>
-        item._id === bookId ? { ...item, quantity } : item
-      )
+      prev.map((item) => (item._id === bookId ? { ...item, quantity } : item))
     );
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
