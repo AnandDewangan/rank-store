@@ -94,7 +94,7 @@ const CheckoutPage = () => {
       (acc, item) => acc + item.quantity * 80,
       0
     );
-    const totalAmount = itemTotal;
+    const totalAmount = itemTotal + shippingTotal;
 
     const res = await fetch(`${baseURL}/api/payment/create-order`, {
       method: "POST",
