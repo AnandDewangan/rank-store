@@ -29,7 +29,7 @@ const CartPage = () => {
 
   let totalShippingCharge = 0;
   for (let i = 0; i < totalQuantity; i++) {
-    totalShippingCharge += i % 2 === 0 ? 80 : 40;
+    totalShippingCharge += i % 2 === 0 ? 80 : 60;
   }
 
   const totalPrice = totalItemPrice + totalShippingCharge;
