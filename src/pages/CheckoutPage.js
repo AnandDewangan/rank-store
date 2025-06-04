@@ -98,7 +98,7 @@ const CheckoutPage = () => {
 
     let shippingTotal = 0;
     for (let i = 0; i < totalQuantity; i++) {
-      shippingTotal += i % 2 === 0 ? 80 : 40;
+      shippingTotal += i % 2 === 0 ? 80 : 60;
     }
 
     const totalAmount = itemTotal + shippingTotal;
