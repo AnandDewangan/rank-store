@@ -5,7 +5,6 @@ import { Container, Form, Button, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 const baseURL = process.env.REACT_APP_API_BASE_URL;
-const key_id = process.env.RAZORPAY_KEY_ID;
 
 const CheckoutPage = () => {
   const { cartItems, clearCart } = useContext(CartContext);
@@ -31,7 +30,7 @@ const CheckoutPage = () => {
 
   const loadRazorpay = (data) => {
     const options = {
-      key: key_id,
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
       amount: data.amount,
       currency: data.currency,
       name: "Rank Publishing House",
