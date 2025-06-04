@@ -4,6 +4,8 @@ import axios from "axios";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import { CartContext } from "../context/CartContext";
 import "../App.css";
+import { toast } from "react-toastify";
+
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const AllBooks = () => {
@@ -121,7 +123,10 @@ const AllBooks = () => {
                   variant="danger"
                   size="sm"
                   className="mt-auto w-100"
-                  onClick={() => addToCart(book)}
+                  onClick={() => {
+                    addToCart(book);
+                    toast.success("Book Add to Cart");
+                  }}
                 >
                   Add to Cart
                 </Button>
