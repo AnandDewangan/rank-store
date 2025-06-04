@@ -86,16 +86,23 @@ const CheckoutPage = () => {
       return;
     }
 
+    const itemTotal = cartItems.reduce(
+      (acc, item) => acc + item.quantity * (item.rankMrp || item.paperMrp),
+      0
+    );
+    const shippingTotal = cartItems.reduce(
+      (acc, item) => acc + item.quantity * 80,
+      0
+    );
+    const totalAmount = itemTotal + shippingTotal;
+
     const res = await fetch(`${baseURL}/api/payment/create-order`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        amount: cartItems.reduce(
-          (acc, item) => acc + item.quantity * (item.rankMrp || item.paperMrp),
-          0
-        ),
+        amount: totalAmount, // Convert to paise for Razorpay
         currency: "INR",
       }),
     });
