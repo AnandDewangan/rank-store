@@ -93,9 +93,6 @@ const CartPage = () => {
           ))}
 
           <Col md={12} className="mt-4 text-center">
-            <p className="text-muted mb-2">
-              📦 Shipping Charges: ₹80 per book (Indian Post)
-            </p>
             <h5 className="fw-normal">
               Items Total: ₹ {totalItemPrice.toFixed(2)}
             </h5>
