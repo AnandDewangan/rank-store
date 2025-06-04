@@ -20,10 +20,17 @@ const CartPage = () => {
     if (item.quantity > 1) updateQuantity(bookId, item.quantity - 1);
   };
 
-  const totalPrice = cartItems.reduce(
+  const totalItemPrice = cartItems.reduce(
     (acc, item) => acc + item.quantity * (item.rankMrp || item.paperMrp),
     0
   );
+
+  const totalShippingCharge = cartItems.reduce(
+    (acc, item) => acc + item.quantity * 80,
+    0
+  );
+
+  const totalPrice = totalItemPrice + totalShippingCharge;
 
   return (
     <Container className="my-5">
@@ -72,7 +79,7 @@ const CartPage = () => {
                   size="sm"
                   onClick={() => {
                     removeFromCart(item._id);
-                    toast.error("Remove from Cart");
+                    toast.error("Removed from Cart");
                   }}
                   className="d-flex align-items-center gap-1"
                 >
@@ -84,7 +91,18 @@ const CartPage = () => {
           ))}
 
           <Col md={12} className="mt-4 text-center">
-            <h4 className="fw-bold mb-3">Total: ₹ {totalPrice.toFixed(2)}</h4>
+            <p className="text-muted mb-2">
+              📦 Shipping Charges: ₹80 per book (Indian Post)
+            </p>
+            <h5 className="fw-normal">
+              Items Total: ₹ {totalItemPrice.toFixed(2)}
+            </h5>
+            <h5 className="fw-normal">
+              Shipping Total: ₹ {totalShippingCharge.toFixed(2)}
+            </h5>
+            <h4 className="fw-bold mb-3">
+              Grand Total: ₹ {totalPrice.toFixed(2)}
+            </h4>
             <Button
               variant="success"
               size="lg"
@@ -93,6 +111,9 @@ const CartPage = () => {
             >
               Proceed to Checkout
             </Button>
+            <p className="mt-3 text-muted small">
+              All books will be delivered via <strong>Indian Post</strong>.
+            </p>
           </Col>
         </Row>
       )}
