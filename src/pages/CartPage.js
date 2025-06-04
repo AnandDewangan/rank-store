@@ -25,10 +25,12 @@ const CartPage = () => {
     0
   );
 
-  const totalShippingCharge = cartItems.reduce(
-    (acc, item) => acc + item.quantity * 80,
-    0
-  );
+  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  let totalShippingCharge = 0;
+  for (let i = 0; i < totalQuantity; i++) {
+    totalShippingCharge += i % 2 === 0 ? 80 : 40;
+  }
 
   const totalPrice = totalItemPrice + totalShippingCharge;
 

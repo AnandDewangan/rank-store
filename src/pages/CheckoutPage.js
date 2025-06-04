@@ -90,10 +90,17 @@ const CheckoutPage = () => {
       (acc, item) => acc + item.quantity * (item.rankMrp || item.paperMrp),
       0
     );
-    const shippingTotal = cartItems.reduce(
-      (acc, item) => acc + item.quantity * 80,
+
+    const totalQuantity = cartItems.reduce(
+      (acc, item) => acc + item.quantity,
       0
     );
+
+    let shippingTotal = 0;
+    for (let i = 0; i < totalQuantity; i++) {
+      shippingTotal += i % 2 === 0 ? 80 : 40;
+    }
+
     const totalAmount = itemTotal + shippingTotal;
 
     const res = await fetch(`${baseURL}/api/payment/create-order`, {
