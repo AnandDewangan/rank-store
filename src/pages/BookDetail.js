@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { CartContext } from "../context/CartContext";
 import "../App.css";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
@@ -15,9 +15,11 @@ const BookDetail = () => {
   const [email, setEmail] = useState("");
   const [reviewDescription, setReviewDescription] = useState("");
   const [reviewed, setReviewed] = useState(false);
-  const [message, setMessage] = useState("");
-  const [reviews, setReviews] = useState([]); 
   const { addToCart } = useContext(CartContext);
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   useEffect(() => {
     axios
@@ -25,40 +27,48 @@ const BookDetail = () => {
       .then((res) => setBook(res.data))
       .catch((err) => console.error(err));
 
-    // Load existing reviews
-    const allReviews = JSON.parse(localStorage.getItem("reviews") || "{}");
-    setReviews(allReviews[id] || []);
-  }, [id, baseURL]);
+    axios
+      .get(`${baseURL}/api/books/${id}/reviews`)
+      .then((res) => {
+        setReviews(res.data);
+        if (res.data.length) {
+          const avg =
+            res.data.reduce((sum, r) => sum + r.rating, 0) / res.data.length;
+          setAverageRating(avg.toFixed(1));
+          setReviewCount(res.data.length);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, [id]);
 
-  const handleRatingSubmit = (e) => {
+  const handleRatingSubmit = async (e) => {
     e.preventDefault();
 
-    const ratedBooks = JSON.parse(localStorage.getItem("ratedBooks") || "{}");
-    if (ratedBooks[id] === email) {
-      setMessage("You have already rated this book with this email.");
-      return;
+    try {
+      const response = await axios.post(`${baseURL}/api/books/${id}/reviews`, {
+        email,
+        rating,
+        description: reviewDescription,
+      });
+
+      toast.success("Thanks for your rating!");
+      setReviewed(true);
+
+      // Refresh reviews
+      const updatedReviews = await axios.get(
+        `${baseURL}/api/books/${id}/reviews`
+      );
+      setReviews(updatedReviews.data);
+      if (updatedReviews.data.length) {
+        const avg =
+          updatedReviews.data.reduce((sum, r) => sum + r.rating, 0) /
+          updatedReviews.data.length;
+        setAverageRating(avg.toFixed(1));
+        setReviewCount(updatedReviews.data.length);
+      }
+    } catch (err) {
+      toast.danger(err);
     }
-
-    const newReview = {
-      email,
-      rating,
-      description: reviewDescription,
-      date: new Date().toLocaleString(),
-    };
-
-    // Save to localStorage
-    ratedBooks[id] = email;
-    localStorage.setItem("ratedBooks", JSON.stringify(ratedBooks));
-
-    const allReviews = JSON.parse(localStorage.getItem("reviews") || "{}");
-    const bookReviews = allReviews[id] || [];
-    const updatedReviews = [...bookReviews, newReview];
-    allReviews[id] = updatedReviews;
-    localStorage.setItem("reviews", JSON.stringify(allReviews));
-    setReviews(updatedReviews);
-
-    setReviewed(true);
-    setMessage("Thanks for your rating!");
   };
 
   const handleAddToCart = () => {
@@ -88,6 +98,13 @@ const BookDetail = () => {
         </Col>
         <Col md={7}>
           <h2 className="text-primary fw-bold">{book.title}</h2>
+          {reviewCount > 0 && (
+            <div className="mb-2">
+              {renderStars(Math.round(averageRating))}
+              <span className="ms-2 text-muted">({reviewCount} reviews)</span>
+            </div>
+          )}
+
           <p className="text-muted">by {book.author}</p>
           <div className="mb-3">
             {book.rankMrp !== book.paperMrp ? (
@@ -139,12 +156,9 @@ const BookDetail = () => {
       <Row className="mt-4">
         <Col md={6}>
           <h5 className="mb-3">Rate this book</h5>
-          {message && (
-            <Alert variant={reviewed ? "success" : "warning"}>{message}</Alert>
-          )}
           <Form onSubmit={handleRatingSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Email (one rating per email):</Form.Label>
+              <Form.Label>Email:</Form.Label>
               <Form.Control
                 type="email"
                 required
@@ -171,12 +185,13 @@ const BookDetail = () => {
               </div>
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Review Description (optional):</Form.Label>
+              <Form.Label>Review Description:</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 value={reviewDescription}
                 onChange={(e) => setReviewDescription(e.target.value)}
+                required
               />
             </Form.Group>
             <Button type="submit" variant="primary" disabled={reviewed}>
@@ -189,13 +204,26 @@ const BookDetail = () => {
           {reviews.length > 0 && (
             <>
               <h5 className="mb-3">User Reviews</h5>
-              {reviews.map((r, index) => (
-                <div key={index} className="border rounded p-3 mb-3 bg-light">
-                  <strong>{r.email}</strong> ({r.date})
-                  <div className="mb-2">{renderStars(r.rating)}</div>
-                  {r.description && <p>{r.description}</p>}
-                </div>
-              ))}
+              {reviews
+                .slice(0, showAllReviews ? reviews.length : 3)
+                .map((r, index) => (
+                  <div key={index} className="border rounded p-3 mb-3 bg-light">
+                    <strong>{r.email}</strong> (
+                    {new Date(r.date).toLocaleDateString()})
+                    <div className="mb-2">{renderStars(r.rating)}</div>
+                    {r.description && <p>{r.description}</p>}
+                  </div>
+                ))}
+
+              {reviews.length > 3 && (
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => setShowAllReviews(!showAllReviews)}
+                >
+                  {showAllReviews ? "Show Less" : "View More"}
+                </Button>
+              )}
             </>
           )}
         </Col>
