@@ -99,8 +99,8 @@ const AllBooks = () => {
                       borderRadius: "8px",
                     }}
                   />
-                  <h5 className="fw-bold text-dark">{book.title}</h5>
-                  <p className="text-muted small mb-1">{book.author}</p>
+                  <h5 className="fw-bold text-dark text-truncate">{book.title}</h5>
+                  <p className="text-muted small mb-1 text-truncate">{book.author}</p>
                 </Link>
                 <div className="item-price fs-5 fw-semibold mb-2">
                   {book.rankMrp &&
