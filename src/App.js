@@ -17,6 +17,8 @@ import { ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Dashboard from "./pages/Dashboard";
+import RegisterLogin from "./components/RegisterLogin";
 
 function App() {
   useEffect(() => {
@@ -42,6 +44,8 @@ function App() {
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
+        <Route path="/register" element={<RegisterLogin />} /> 
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       <Footer />
       <FooterBottom />
