@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const RegisterLogin = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -15,7 +16,7 @@ const RegisterLogin = () => {
       const url = isLogin ? "/api/auth/login" : "/api/auth/register";
       const payload = isLogin ? { emailOrUsername: form.emailOrUsername, password: form.password } : form;
 
-      const res = await axios.post(`http://localhost:5000${url}`, payload);
+      const res = await axios.post(`${baseURL}${url}`, payload);
       if (isLogin) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         window.location.href = "/dashboard";
