@@ -5,11 +5,13 @@ import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { CartContext } from "../context/CartContext";
 import "../App.css";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const BookDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [book, setBook] = useState(null);
   const [rating, setRating] = useState(0);
   const [email, setEmail] = useState("");
@@ -21,6 +23,8 @@ const BookDetail = () => {
   const [reviewCount, setReviewCount] = useState(0);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  
   useEffect(() => {
     axios
       .get(`${baseURL}/api/books/${id}`)
@@ -76,6 +80,41 @@ const BookDetail = () => {
     toast.success("Book added to cart!");
   };
 
+  const handleBuyEbook = () => {
+    const amount = Number(book.eBookMrp) * 100;
+
+    const options = {
+      key: "YOUR_RAZORPAY_KEY", // Replace with your real Razorpay key
+      amount,
+      currency: "INR",
+      name: "Rank Publishing",
+      description: `Buy eBook: ${book.title}`,
+      handler: function (response) {
+        // Record the purchase
+        axios.post(`${baseURL}/api/books/purchase`, {
+          userId: user._id,
+          bookId: book._id,
+          paymentId: response.razorpay_payment_id,
+        })
+          .then(() => {
+            toast.success("eBook purchase successful!");
+            navigate("/dashboard");
+          })
+          .catch(() => toast.error("Payment succeeded but saving failed"));
+      },
+      prefill: {
+        name: user.name,
+        email: user.email,
+      },
+      theme: {
+        color: "#F37254",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
   const renderStars = (value) =>
     [...Array(5)].map((_, i) => (
       <span key={i} style={{ color: i < value ? "#ffc107" : "#e4e5e9" }}>
@@ -118,7 +157,7 @@ const BookDetail = () => {
               </>
             ) : (
               <span className="text-success fw-bold fs-4">
-                ₹ {book.rankMrp}
+                ₹ {user ? book.eBookMrp : book.rankMrp}
               </span>
             )}
           </div>
@@ -138,16 +177,24 @@ const BookDetail = () => {
           <p>
             <strong>Cover Type:</strong> {book.cover}
           </p>
-
+          <p>
+            <strong>Category:</strong> {book.cat}
+          </p>
           {book.description && (
             <p className="mt-3">
               <strong>Description:</strong> {book.description}
             </p>
           )}
 
-          <Button variant="danger" className="mt-3" onClick={handleAddToCart}>
-            Add to Cart
-          </Button>
+          {user ? (
+            <Button variant="primary" className="mt-3" onClick={handleBuyEbook}>
+              Buy eBook
+            </Button>
+          ) : (
+            <Button variant="danger" className="mt-3" onClick={handleAddToCart}>
+              Add to Cart
+            </Button>
+          )}
         </Col>
       </Row>
 
